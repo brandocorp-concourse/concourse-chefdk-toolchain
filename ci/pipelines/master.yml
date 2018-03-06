@@ -1,0 +1,39 @@
+resource_types:
+- name: omnitruck
+  type: docker-image
+  source:
+    repository: brandocorp/concourse-omnitruck-resource
+    tag: latest
+
+resources:
+  - name: chefdk-ubuntu-latest
+    type: omnitruck
+    source:
+      product: chefdk
+      channel: stable
+      platform: ubuntu
+      platform_version: 16.04
+      architecture: x86_64
+  - name: source-repo
+    type: git
+    source:
+      uri: https://github.com/brandocorp/concourse-chefdk-toolchain.git
+      branch: master
+  - name: chefdk-toolchain-image
+    type: docker-image
+    source:
+      repository: brandocorp/concourse-chefdk-toolchain
+      username: {{docker-username}}
+      password: {{docker-password}}
+
+jobs:
+  - name: build
+    plan:
+      - get: source-repo
+        trigger: true
+      - get: chefdk-ubuntu-latest
+        trigger: true
+      - put: chefdk-toolchain-image
+        params:
+          build: source-repo
+          tag_as_latest: true
