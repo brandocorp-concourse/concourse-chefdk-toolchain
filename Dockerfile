@@ -8,7 +8,8 @@ RUN apt-get update -y -q \
       | bash -s -- -P chefdk -v ${CHEFDK_VERSION} \
   && /usr/bin/chef shell-init bash > /etc/profile.d/chefdk.sh \
   && chmod 755 /etc/profile.d/chefdk.sh \
-  && touch /root/config.rb
+  && touch /root/config.rb \
+  && chef gem install github_changelog_generator
 
 ENTRYPOINT ["bash", "-l", "-c"]
 
